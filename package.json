@@ -9,16 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@matiaslgonzalez/react-timeline-range-slider": "^1.6.0",
+    "antd": "^5.12.2",
+    "date-fns": "^2.30.0",
+    "moment": "^2.29.4",
+    "next": "13.4.0",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.0.4"
+    "react-dom": "^18"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
-    "@types/react": "^18",
+    "@types/react": "^18.2.43",
     "@types/react-dom": "^18",
     "eslint": "^8",
-    "eslint-config-next": "14.0.4"
+    "eslint-config-next": "13.4.0",
+    "typescript": "^5"
   }
 }
