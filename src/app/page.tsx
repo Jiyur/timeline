@@ -1,9 +1,9 @@
 'use client'
 
-import Tablet from "@/component/tablet/Tablet"
-import Timeline from "@/component/timeline/Timeline"
 import { Button, Flex, Modal, Select } from "antd"
 import { useState } from "react"
+import Tablet from "@/component/tablet/Tablet"
+import Timeline from "@/component/timeline/Timeline"
 
 type RoomPulldown = {
   label: React.ReactNode,
@@ -20,22 +20,12 @@ const roomList: RoomPulldown[] = [{
 
 export default function Home() {
   const [roomId, setRoomId] = useState<String>(roomList[0].value)
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-    Modal.destroyAll()
-  };
 
   const handleChange = (value: {
     value: string; label: React.ReactNode
   }) => {
     setRoomId(value.value)
   }
-
 
   return (
     <main >
