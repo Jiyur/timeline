@@ -1,5 +1,5 @@
-import { Button, Divider } from "antd"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { Button, Divider, Table } from "antd"
+import { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { format, set } from "date-fns"
 import Flex from 'antd/es/flex'
 import Title from 'antd/es/typography/Title'
@@ -9,27 +9,36 @@ import { isSameTime } from "../common/utils"
 import Timeline from "../timeline/Timeline"
 import './Tablet.css'
 
-type Activity = 'create' | 'use' | 'delete' | 'error'
+type Activity = 'create' | 'use' | 'busy' | 'error'
+
+type Props = {
+  roomId?: String
+}
 
 const now = new Date();
 const getTodayAtSpecificHour = (hour = 12) =>
   set(now, { hours: hour, minutes: 0, seconds: 0, milliseconds: 0 })
 
-const selectedStart = getTodayAtSpecificHour(8);
-const selectedEnd = getTodayAtSpecificHour(9);
+const Tablet = ({ roomId }: Props) => {
+  const selectedStart = getTodayAtSpecificHour(8);
+  const selectedEnd = getTodayAtSpecificHour(9);
 
-const Tablet = () => {
-  const ROOM_ID = "Meeting room 01"
   const [error, setError] = useState<boolean>(false);
   const [activity, setActivity] = useState<Activity>('create')
-  const [meetings, setMeetings] = useState<DisabledInterval[]>()
+  const [meetings, setMeetings] = useState<DisabledInterval[]>(
+    [{
+      id: "Endyear Meeting",
+      start: getTodayAtSpecificHour(9),
+      end: getTodayAtSpecificHour(13),
+      color: 'gray'
+    }]
+  )
   const [selectedItem, setSelectedItem] = useState<DisabledInterval>()
   const [currentTime, setCurrentTime] =
     useState<[selectedStart: Date, selectedEnd: Date]>([
       selectedStart,
       selectedEnd,
     ])
-
   const statusColor = useMemo(() => {
     if (activity === 'create') {
       return '#63c302'
@@ -41,10 +50,26 @@ const Tablet = () => {
 
   }, [activity])
 
+  const statusText = useMemo(() => {
+    if (activity === 'use') {
+      return 'Ready to use'
+    }
+    if (activity === 'busy') {
+      return 'This room is busy'
+    }
+    return 'Not applicable'
+  }, [activity])
+
+  useEffect(() => {
+    setCurrentTime([selectedStart, selectedEnd])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomId])
+
   const handleOnSave = () => {
     if (error || isSameTime(currentTime[0], currentTime[1])) {
       return
     }
+
     const newMeetings = Array.from(meetings || []);
     newMeetings.push({
       id: ("Meeting " + newMeetings.length).toString(),
@@ -61,31 +86,43 @@ const Tablet = () => {
         setSelectedItem(meeting)
         return meeting
       }
-
     })
-    if (selected && selected.color === 'yellow') {
+    if (selected && selected.color === 'gray') {
       setActivity('use')
       return;
 
     }
-    if (!selected && !error) {
-      setActivity('create')
-      setSelectedItem(undefined)
+    if (selected && selected.color === 'yellow') {
+      setActivity('busy')
+      return
     }
+
     else {
       setActivity('error')
       setSelectedItem(undefined)
     }
-  }, [currentTime, meetings, error])
+  }, [currentTime, meetings])
+
+  const onChangeStatus = useCallback(() => {
+    let itemIndex;
+    if (activity === 'use') {
+      itemIndex = meetings.findIndex((item) => item.id === selectedItem?.id)
+      let newItem = meetings[itemIndex]
+      let newArray = Array.from(meetings)
+      newArray[itemIndex] = { ...newItem, color: 'yellow' }
+      setMeetings(newArray)
+    }
+  }, [activity, selectedItem, meetings])
 
   useEffect(() => {
     onTimeSelect()
   }, [currentTime, onTimeSelect])
 
+
   return (
-    <div style={{ marginLeft: '1rem', marginRight: '1rem' }}>
+    <div style={{ marginLeft: '1rem', marginRight: '1rem' }} >
       <Flex justify='start' className='header-text'>
-        <Title level={4} style={{ color: 'white' }}>{ROOM_ID} </Title>
+        <Title level={4} style={{ color: 'white' }}>{roomId?.toString()} </Title>
       </Flex>
       <Divider style={{ color: 'white', background: 'white' }} />
       <Flex align='center' style={{ marginBottom: 40 }} gap={60}>
@@ -95,24 +132,25 @@ const Tablet = () => {
             color: statusColor === '#ffc300' ? 'black' : 'white', padding: '70px 40px', background: statusColor,
             fontSize: '22px'
           }}>
-          {activity.toLocaleUpperCase()}
+          {statusText.toLocaleUpperCase()}
         </Flex>
         <div style={{ flexGrow: 1 }}>
-          <Paragraph style={{ fontSize: 16, color: 'white', textTransform: 'uppercase' }} >{selectedItem?.id ?? 'No meeting available'}</Paragraph>
-          <Paragraph style={{ fontSize: 16, fontWeight: 'bold', color: 'white' }}>
-            {format(currentTime[0], 'H:mm')}-{format(currentTime[1], 'H:mm')}
+          <Paragraph style={{ fontSize: 16, color: 'white', textTransform: 'uppercase' }} >
+            {selectedItem?.id ?? 'No meeting available this time'}
           </Paragraph>
-          <Paragraph style={{ color: 'white', fontSize: 14 }}>Host: HR&GA</Paragraph>
+          <Title level={5} style={{ color: 'white' }}>
+            {format(currentTime[0], 'H:mm')}-{format(currentTime[1], 'H:mm')}
+          </Title>
+          <Title level={5} style={{ color: 'white', fontSize: 14 }}>Host by: Duong Nguyen</Title>
           <Paragraph style={{ fontSize: 16, fontWeight: 'bolder', color: 'white' }}>
           </Paragraph>
           <Button
             type="primary"
             size="large"
-            onClick={handleOnSave}>
+            onClick={onChangeStatus}>
             {activity.toUpperCase()}
           </Button>
         </div>
-
       </Flex >
       <Divider style={{ color: 'white', background: 'white' }} />
       <div>

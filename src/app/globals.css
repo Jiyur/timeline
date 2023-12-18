@@ -19,4 +19,10 @@ body {
   color: white;
   /* background-repeat: no-repeat; */
   background-image: linear-gradient(rgba(22, 21, 21, 1) 1%, rgba(38, 36, 36, 1) 6%, rgba(29, 29, 34, 0.958420868347339) 13%, rgba(43, 43, 47, 1) 28%, rgba(47, 49, 50, 1) 100%);
+  background-repeat: no-repeat;
+}
+
+.ant-modal-content {
+  background-image: linear-gradient(rgba(22, 21, 21, 1) 1%, rgba(38, 36, 36, 1) 6%, rgba(29, 29, 34, 0.958420868347339) 13%, rgba(43, 43, 47, 1) 28%, rgba(47, 49, 50, 1) 100%) !important;
+  background-repeat: no-repeat !important;
 }
