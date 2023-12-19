@@ -22,9 +22,9 @@ const getTodayAtSpecificHour = (hour = 12) =>
 
 const mockMeeting: DisabledInterval[] = [
   {
-  id: "Endyear Meeting",
-  start: getTodayAtSpecificHour(9),
-  end: getTodayAtSpecificHour(13),
+    id: "Endyear Meeting",
+    start: getTodayAtSpecificHour(9),
+    end: getTodayAtSpecificHour(13),
     color: "gray"
   }
 ];
@@ -146,8 +146,10 @@ const Tablet = ({ roomId }: Props) => {
             flexGrow: 1,
             minWidth: "50%",
             maxWidth: "50%",
-            color: statusColor === "#ffc300" ? "black" : "white", padding: "70px 40px", background: statusColor,
-            fontSize: "22px"
+            padding: "70px 40px",
+            fontSize: "22px",
+            background: statusColor,
+            color: statusColor === "#ffc300" ? "black" : "white",
           }}>
           {statusText.toLocaleUpperCase()}
         </Flex>
@@ -155,19 +157,15 @@ const Tablet = ({ roomId }: Props) => {
           <Paragraph style={{ fontSize: 18, color: "white", textTransform: "uppercase" }} >
             {selectedItem?.id ?? "No meeting available this time"}
           </Paragraph>
-          {activity !== "error" &&
-            <div style={{ marginBottom: "2rem" }}>
-              <span style={{ color: "white" }}>
-                {format(currentTime[0], "H:mm")}-{format(currentTime[1], "H:mm")}
-              </span>
-              <Title level={4} style={{ color: "white", fontSize: 14 }}>Host by: Duong Nguyen</Title>
-            </div>
-          }
+          <span style={{ color: "white" }}>
+            {format(currentTime[0], "H:mm")} - {format(currentTime[1], "H:mm")}
+          </span>
+          {activity !== "error" && <Title level={4} style={{ color: "white", fontSize: 14 }}>Host by: Duong Nguyen</Title>}
           {buttonContent}
         </div>
       </Flex >
       <Divider style={{ color: "white", background: "white" }} />
-      <div>
+      <div >
         <Timeline
           setCurrentTime={setCurrentTime}
           meetings={meetings}
